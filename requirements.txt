@@ -1,0 +1,10 @@
+SpeechRecognition
+PyAudio
+colorama
+edge-tts
+playsound==1.2.2
+webbrowser
+pyautogui
+pywhatkit
+psutil
+plyer
