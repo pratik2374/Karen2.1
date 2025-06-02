@@ -23,4 +23,4 @@ def openweb(webname):
         print("No matching websites found.")
 
 # Example usage
-# openweb("instagram")
+openweb("google")
