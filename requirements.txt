@@ -8,3 +8,8 @@ pyautogui
 pywhatkit
 psutil
 win10toast_click
+crewai  
+langchain-openai
+composio-crewai
+crewai-tools
+

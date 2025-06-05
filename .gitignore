@@ -1,0 +1,8 @@
+todo.txt
+image.png
+
+# Virtual environments
+venv/
+
+# VS Code
+.vscode/
