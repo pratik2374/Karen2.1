@@ -1,8 +1,11 @@
 todo.txt
 image.png
+agents/.env
+
 
 # Virtual environments
 venv/
 
 # VS Code
 .vscode/
+agents/.env
