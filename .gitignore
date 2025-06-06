@@ -9,3 +9,4 @@ venv/
 # VS Code
 .vscode/
 agents/.env
+agents/.env
