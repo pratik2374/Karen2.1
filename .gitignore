@@ -10,3 +10,10 @@ venv/
 .vscode/
 agents/.env
 agents/.env
+db/chroma.sqlite3
+# Python cache
+agents/tweet/__pycache__
+tweetkeys.txt
+.gitignore
+agents/saved_images/ChatGPT Image Jun 6, 2025, 12_51_11 PM.png
+agents/tweet/.env
