@@ -6,6 +6,7 @@ from urllib.parse import quote_plus
 load_dotenv()
 
 HAS_API_KEY = os.getenv("HASDATA_API_KEY")
+top = 5
 
 def trending_searches_on_google(topic: str) -> str:
     """
@@ -20,6 +21,8 @@ def trending_searches_on_google(topic: str) -> str:
             'Content-Type': "application/json"
         }
 
+        # Here ypu can change location, relatedTopics, relatedQueries, time, etc.
+        # https://app.hasdata.com/apis/21 from this link you can know more about the API and its parameters
         conn.request(
             "GET",
             f"/scrape/google-trends/search?q={encoded_topic}&geo=IN-DL&region=country&dataType=relatedQueries&date=now+7-d",
@@ -30,13 +33,14 @@ def trending_searches_on_google(topic: str) -> str:
         data = res.read()
         json_data = json.loads(data.decode("utf-8"))
 
-        top_queries = json_data.get('relatedQueries', {}).get('top', [])[:5]
+        top_queries = json_data.get('relatedQueries', {}).get('top', [])[:top]
 
         if not top_queries:
             return "No trending queries found."
 
         result_lines = [
-            f"{idx}. {item.get('query', 'N/A')}: {{{item.get('extractedValue', 'N/A')}}}"
+            #f"{idx}. {item.get('query', 'N/A')}: {{{item.get('extractedValue', 'N/A')}}}" # For extractedValue
+            f"{idx}. {item.get('query', 'N/A')}" # For query only
             for idx, item in enumerate(top_queries, 1)
         ]
 
@@ -54,61 +58,3 @@ def trending_searches_on_google(topic: str) -> str:
 #conn.request("GET", "/scrape/google-trends/search?q=Ai&geo=IN-DL&region=country&dataType=relatedQueries&date=now+7-d", headers=headers)
 #conn.request("GET", "/scrape/google-trends/search?q=Coffee&geo=IN-DL&region=country&dataType=relatedTopics&date=now+7-d&cat=0", headers=headers)
 
-
-# Extract rising and top queries
-# rising_queries = data['relatedQueries'].get('rising', [])
-# top_queries = data['relatedQueries'].get('top', [])
-
-# # Helper function to print query data
-# def print_queries(title, queries):
-#     print(f"\n--- {title.upper()} ---")
-#     for i, item in enumerate(queries, 1):
-#         query = item.get('query', 'N/A')
-#         value = item.get('value', 'N/A')
-#         extracted_value = item.get('extractedValue', 'N/A')
-#         link = item.get('link', 'N/A')
-#         print(f"{i}. Query: {query}\n   Value: {value}\n   Extracted Value: {extracted_value}\n   Link: {link}\n")
-
-# # Print each section
-# #print_queries("Rising", rising_queries)
-# print_queries("Top", top_queries)
-
-# import http.client
-
-# conn = http.client.HTTPSConnection("api.hasdata.com")
-
-# headers = {
-#     'x-api-key': "acc83333-7d23-402e-9816-31470d47e947",
-#     'Content-Type': "application/json"
-# }
-
-# conn.request("GET", "/scrape/google-trends/search?q=Ai&geo=IN-DL&region=country&dataType=relatedQueries&date=now+7-d", headers=headers)
-# #conn.request("GET", "/scrape/google-trends/search?q=Coffee&geo=IN-DL&region=country&dataType=relatedTopics&date=now+7-d&cat=0", headers=headers)
-
-# res = conn.getresponse()
-# data = res.read()
-
-# print(data.decode("utf-8"))
-
-# ans = data.decode("utf-8")
-
-# import json
-# data = json.loads(ans)
-
-# # Extract rising and top queries
-# rising_queries = data['relatedQueries'].get('rising', [])
-# top_queries = data['relatedQueries'].get('top', [])
-
-# # Helper function to print query data
-# def print_queries(title, queries):
-#     print(f"\n--- {title.upper()} ---")
-#     for i, item in enumerate(queries, 1):
-#         query = item.get('query', 'N/A')
-#         value = item.get('value', 'N/A')
-#         extracted_value = item.get('extractedValue', 'N/A')
-#         link = item.get('link', 'N/A')
-#         print(f"{i}. Query: {query}\n   Value: {value}\n   Extracted Value: {extracted_value}\n   Link: {link}\n")
-
-# # Print each section
-# #print_queries("Rising", rising_queries)
-# print_queries("Top", top_queries)

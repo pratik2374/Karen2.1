@@ -19,9 +19,9 @@ def topic_selection(treding_keywords, user_profile) -> str:
         f"You are a helpful twitter post creator fot user age range {user_profile['age_range']}, "
         f"working as a {user_profile['profession']} and he is {user_profile['about']} interested in {', '.join(user_profile['interests'])}. "
         "Your task is to generate engaging and relevant tweets based on the user's interests and profession. "
-        "You will be provided with a list of trending topics with score(range of 0-100), choose the one topic accouting relevance to the user profile and trends."
+        "You will be provided with a list of trending topics, choose the one topic accouting relevance to the user profile and trends."
         "and you should choose one topic from the list that can be used to make tweets that are informative, entertaining, and aligned with the user's profile. "
-        "One return the chosen topic from the list, no preamble, no explanation, just the topic itself. "
+        "Only return the one chosen topic from the list, no preamble, no explanation, just the topic itself without any additional text or formatting with any special characters or numbers"
     )
 
     prompt = ChatPromptTemplate.from_messages([
@@ -49,7 +49,7 @@ def generate_hastags(tweet_content):
         "You are a helpful assistant that generates relevant hashtags for tweets. "
         "Given the tweet content, create a list of 3-4 hashtags that are relevant and popular. "
         "The hashtags should be concise and related to the main topics of the tweet and total resposne not exceed 20 characters."
-        "Return only the hashtags, separated by commas, without any additional text or explanation."
+        "Return only the hashtags, not separated by commas speparated by space, without any additional text or explanation."
     )
 
     prompt = ChatPromptTemplate.from_messages([
