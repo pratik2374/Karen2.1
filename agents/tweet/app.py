@@ -87,13 +87,14 @@ def main():
             with st.form(key="topic_form"):
                 col1, col2 = st.columns([4, 1])
                 with col1:
-                    selected = st.segmented_control(
-                        "Select a topic from the list:",
+                    selected_index = topics_list.index(st.session_state["selected_topic"]) if st.session_state["selected_topic"] in topics_list else 0
+                    selected = st.radio(
+                        "Select a topic from the list, best matching is already slected",
                         options=topics_list,
+                        index=selected_index,
                         key="selected_trend",
                         help="Click to select a topic you resonate with.",
-                        selection_mode="single",
-                        default=st.session_state["selected_topic"]
+                        horizontal=True
                     )
                     st.session_state["selected_topic"] = str(selected)
                     st.session_state["topic_dropdown"] = st.session_state["selected_topic"]

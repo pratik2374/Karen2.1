@@ -6,7 +6,7 @@ from urllib.parse import quote_plus
 load_dotenv()
 
 HAS_API_KEY = os.getenv("HASDATA_API_KEY")
-top = 5
+top = 4
 
 def trending_searches_on_google(topic: str) -> str:
     """

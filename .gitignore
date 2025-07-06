@@ -18,3 +18,4 @@ tweetkeys.txt
 agents/saved_images/ChatGPT Image Jun 6, 2025, 12_51_11 PM.png
 agents/tweet/.env
 agents/tweet/db/chroma.sqlite3
+.env

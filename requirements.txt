@@ -12,4 +12,5 @@ crewai
 langchain-openai
 composio-crewai
 crewai-tools
+pyperclip
 
