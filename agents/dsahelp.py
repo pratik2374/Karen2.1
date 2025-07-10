@@ -42,7 +42,7 @@ class dsa:
         problem help improve etc. what impact in real world this problem concept can create.use numbers to make it tempting to solve but Keep it short though.
         • A URL to the problem on Leetcode ("Solve it here:")
         A closing line (e.g., "Best regards,")
-        Use HTML tags for proper separation and formatting
+        Use HTML tags for proper separation and formatting, and proper line breaks
         Do not include any markdown formatting or additional commentary. Just output the email content as described.
         """
         try:
@@ -69,7 +69,7 @@ class dsa:
         from datetime import date
         today = date.today()
         sender.process_natural_language_request(
-        f"mail this to myself, with subject : \"Lets pump your DSA skills, can you solve {today}'s problem\" and body of mail is {self.problem}"
+        f"mail this to myself, with subject : \"Lets pump your DSA skills, can you solve {today}'s problem\" and body of mail is {self.problem}, in the end write from"
         )
 
         sender.process_natural_language_request(
@@ -110,7 +110,7 @@ Use proper HTML tags for section headings, line breaks, and code blocks to make 
             return f"Error generating solution: {str(e)}"
 
 
-# dsa_helper = dsa()
-# # Generate a problem and its detailed answer
-# problem_and_solution_email = dsa_helper.get_daily_problem()
-# print(problem_and_solution_email) 
+dsa_helper = dsa()
+# Generate a problem and its detailed answer
+problem_and_solution_email = dsa_helper.get_daily_problem()
+print(problem_and_solution_email) 
