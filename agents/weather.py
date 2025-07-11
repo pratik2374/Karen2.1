@@ -3,20 +3,16 @@ load_dotenv()
 import regex as re
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
-from agno.tools.openweather import OpenWeatherTools
+
 import os
+from dotenv import load_dotenv
+load_dotenv()
+os.environ["OPENWEATHER_API_KEY"] = os.getenv("WEATHER_API_KEY")
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+from agno.tools.openweather import OpenWeatherTools
 
 class WeatherAgent:
-    def __init__(self, composio_key: str = None):
-        """
-        composio_key: (str) Composio API key. If not provided, will use the COMPOSIO_KEY environment variable.
-        Example usage:
-            weather_agent = WeatherAgent()
-        """
-        if composio_key is None:
-            composio_key = os.getenv("COMPOSIO_KEY")
-        if not composio_key:
-            raise ValueError("Composio key must be provided either as an argument or in the COMPOSIO_KEY environment variable.")
+    def __init__(self):
         
         self.agent = Agent(
             model=OpenAIChat(id="gpt-4o-mini"),
@@ -59,7 +55,6 @@ class WeatherAgent:
 
                 Thank you.
             """,
-            markdown=True,
         )
 
     def get_weather_response_from_user_input(self, user_input: str):
@@ -67,7 +62,10 @@ class WeatherAgent:
             Get weather response for a user input string (e.g., 'What's the weather in Delhi?')
             Prints the response in markdown format.
             """
-            response = self.agent.print_response(user_input, markdown=True)
-            self.response = response
+            response = self.agent.run(user_input)
             return response
+    
+temp = WeatherAgent()
+print(temp.get_weather_response_from_user_input("What's the weather in New Delhi?").content)
+print(temp.get_weather_response_from_user_input("Is it raining in London?").content)
 
