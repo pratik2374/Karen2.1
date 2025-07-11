@@ -1,104 +1,71 @@
-from crewai import Agent, Task, Crew, CrewOutput
-from langchain_openai import ChatOpenAI
-from composio_crewai import ComposioToolSet, Action, App
-from typing import Dict, Any, List, Union
 from dotenv import load_dotenv
-from langchain.tools import tool
 load_dotenv()
+import regex as re
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+
 import os
+from dotenv import load_dotenv
+load_dotenv()
+os.environ["OPENWEATHER_API_KEY"] = os.getenv("WEATHER_API_KEY")
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+from agno.tools.openweather import OpenWeatherTools
 
 class WeatherAgent:
     def __init__(self):
-        openai_api_key = os.getenv('OPENAI_API_KEY')
-        if openai_api_key is None:
-            raise ValueError("OPENAI_API_KEY environment variable is not set")
-        os.environ['OPENAI_API_KEY'] = openai_api_key
         
-        composio_key = os.getenv('COMPOSIO_KEY')
-        if composio_key is None:
-            raise ValueError("COMPOSIO_KEY environment variable is not set")
-        
-        self.composio_toolset = ComposioToolSet(api_key=composio_key)
-        self.weather_tools = list(self.composio_toolset.get_tools(actions=['WEATHERMAP_WEATHER']))
-        self.llm = ChatOpenAI()
-        # Define the weather agent
-        self.weather_agent = Agent(
-            role="Weather Information Agent",
-            goal="""You are an AI agent that retrieves and summarizes weather information for any given location. 
-                    You should extract and format the weather data in a clear, structured manner.
-                    IMPORTANT: Convert all temperature values from Kelvin to Celsius using the formula: Celsius = Kelvin - 273.15""",
-            backstory=(
-                "You are a specialized AI agent with expertise in weather data analysis. "
-                "You have access to weather tools and can provide detailed weather information "
-                "for any location in the world. You always format your responses clearly and concisely. "
-                "You always convert temperatures from Kelvin to Celsius for better readability."
-            ),
-            verbose=True,
-            tools=self.weather_tools,
-            llm=self.llm,
-        )
-    def celsius_cal(self, temp: float) -> float:
-        """
-        Convert temperature from Kelvin to Celsius
-        
-        Args:
-            temp (float): Temperature in Kelvin
-            
-        Returns:
-            float: Temperature in Celsius
-        """
-        return temp - 273.15
-    
-    def get_weather_summary(self, location: str) -> Union[Dict[str, Any], CrewOutput]:
-        """
-        Get weather summary for a specific location
-        
-        Args:
-            location (str): The location to get weather for (e.g., "New York", "London", "Tokyo")
-            
-        Returns:
-            Dict[str, Any]: Weather data in the specified format
-        """
-        # Create task for weather retrieval
-        weather_task = Task(
-            description=f"""Get the current weather information for {location}. 
-                          Extract and return the following weather parameters in a structured format:
-                          - feels_like: temperature that it feels like (convert from Kelvin to Celsius)
-                          - grnd_level: ground level pressure
-                          - humidity: humidity percentage
-                          - pressure: atmospheric pressure
-                          - sea_level: sea level pressure
-                          - temp: current temperature (convert from Kelvin to Celsius)
-                          - temp_max: maximum temperature (convert from Kelvin to Celsius)
-                          - temp_min: minimum temperature (convert from Kelvin to Celsius)
-                          
-                          IMPORTANT: All temperature values (feels_like, temp, temp_max, temp_min) must be converted from Kelvin to Celsius using the formula: Celsius = Kelvin - 273.15
-                          
-                          Format the output as a clean dictionary with these exact keys and temperatures in Celsius.""",
-            agent=self.weather_agent,
-            expected_output="A dictionary containing weather parameters with temperatures in Celsius: feels_like, grnd_level, humidity, pressure, sea_level, temp, temp_max, temp_min"
-        )
-        
-        # Create crew and execute
-        weather_crew = Crew(
-            agents=[self.weather_agent], 
-            tasks=[weather_task]
-        )
-        
-        try:
-            result = weather_crew.kickoff()
-            print(f"Weather data for {location}:")
-            print(result)
-            return result
-        except Exception as e:
-            print(f"Error getting weather data for {location}: {e}")
-            return {}
+        self.agent = Agent(
+            model=OpenAIChat(id="gpt-4o-mini"),
+            tools=[
+                OpenWeatherTools(
+                    units="metric",
+                    current_weather=True,
+                    forecast=True,
+                    air_pollution=True,
+                    geocoding=True
+                ),
+            ],
+            description="""
+                You are Karen Weather, an intelligent weather agent.
 
-# Example usage
-if __name__ == "__main__":
-    # Create weather agent instance
-    weather_agent = WeatherAgent()
+                🔹 **Your role:** Provide accurate, real-time weather information to users.
+
+                🔹 **How to respond:**
+                - **Always use the weather tool** to answer weather-related questions (e.g., temperature, humidity, sunrise, sunset, UV index, air quality, forecasts). Never guess or generate data yourself.
+                - For non-weather queries, respond politely that you are a weather assistant and cannot answer unrelated questions.
+
+                🔹 **Examples:**
+
+                User: "What's the temperature in New Delhi?"
+                Assistant: *Call the weather tool with 'New Delhi' as input and return the result.*
+
+                User: "Is it raining in London?"
+                Assistant: *Call the weather tool with 'London' as input and return the result.*
+
+                User: "Tell me the capital of France."
+                Assistant: "I am a weather assistant and can only provide weather information. Please ask a weather-related question."
+
+                User: "Will it be sunny in Bangalore tomorrow?"
+                Assistant: *Call the weather tool with 'Bangalore' as input and provide forecast details if available.*
+
+                🔹 **Important:**
+                - Never fabricate weather data.
+                - Always prefer tool usage for any weather-related question.
+                - Keep responses concise, clear, and structured with units and location context.
+
+                Thank you.
+            """,
+        )
+
+    def get_weather_response_from_user_input(self, user_input: str):
+            """
+            Get weather response for a user input string (e.g., 'What's the weather in Delhi?')
+            Prints the response in markdown format.
+            """
+            response = self.agent.run(user_input)
+            return response
     
-    # Get weather for a location
-    location = "Howrah"  # You can change this to any location
-    weather_data = weather_agent.get_weather_summary(location)
+temp = WeatherAgent()
+print(temp.get_weather_response_from_user_input("What's the weather in New Delhi?").content)
+print(temp.get_weather_response_from_user_input("Is it raining in London?").content)
+
