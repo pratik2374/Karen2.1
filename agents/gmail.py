@@ -189,7 +189,10 @@ class GmailAgent:
                 3. Body content
                 4. Any additional context
                 
-                Then create an email draft with the extracted information.""",
+                Then create an email draft with the extracted information.
+                in the end always sign off with :
+                Yours Karen
+                (Best assistant 😉)""",
                 agent=main_agent,
                 human_input=True,
                 expected_output="A complete email draft with all necessary details"
